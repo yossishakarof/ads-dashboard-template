@@ -50,10 +50,13 @@ async function metaFetch<T>(
   endpoint: string,
   accessToken: string
 ): Promise<T> {
-  const separator = endpoint.includes("?") ? "&" : "?";
-  const url = `${META_API_BASE}${endpoint}${separator}access_token=${accessToken}`;
+  const url = `${META_API_BASE}${endpoint}`;
 
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));

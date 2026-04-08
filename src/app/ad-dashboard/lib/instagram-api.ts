@@ -21,16 +21,20 @@ class InstagramApiError extends Error {
 const API_TIMEOUT_MS = 30_000;
 
 async function igFetch<T>(url: string, accessToken: string): Promise<T> {
-  const separator = url.includes("?") ? "&" : "?";
   const fullUrl = url.startsWith("http")
-    ? `${url}${separator}access_token=${accessToken}`
-    : `${META_API_BASE}${url}${separator}access_token=${accessToken}`;
+    ? url
+    : `${META_API_BASE}${url}`;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
 
   try {
-    const res = await fetch(fullUrl, { signal: controller.signal });
+    const res = await fetch(fullUrl, {
+      signal: controller.signal,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
       const msg = body?.error?.message || `Instagram API error: ${res.status}`;
