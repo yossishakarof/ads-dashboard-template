@@ -17,18 +17,38 @@ npm run dev
 
 ## Auth - Two Modes
 
+### Required Meta Permissions
+
+The token needs different permissions depending on which features you use:
+
+| Permission | Required for | Feature |
+|---|---|---|
+| `ads_read` | Yes - core | Ad campaigns, spend, ROAS, funnel metrics |
+| `pages_show_list` | Yes - Instagram | Discovers Facebook Pages linked to Instagram |
+| `pages_read_engagement` | Yes - Instagram | Reads Page-level Instagram data |
+| `business_management` | Recommended | Access accounts via Business Manager |
+| `instagram_basic` | Yes - Instagram | Instagram profile info, media, followers |
+| `instagram_manage_insights` | Yes - Instagram | Instagram reach, impressions, engagement metrics |
+| `instagram_content_publish` | Optional | Only if using AI content generation to post |
+| `pages_manage_ads` | Optional | Only if managing ads (dashboard is read-only) |
+
+**Ads only:** `ads_read`
+**Ads + Instagram:** `ads_read`, `pages_show_list`, `pages_read_engagement`, `instagram_basic`, `instagram_manage_insights`, `business_management`
+
 ### Direct Token (recommended for personal use)
 
 No Meta App needed. Just set `META_ACCESS_TOKEN` in `.env.local`:
 
 1. Go to https://developers.facebook.com/tools/explorer/
-2. Select your app, request `ads_read` permission
+2. Select your app, add the permissions above
 3. Generate token, paste into `.env.local`
 
 ```bash
 META_ACCESS_TOKEN=your_token_here
 AD_DASHBOARD_SESSION_SECRET=$(openssl rand -hex 32)
 ```
+
+**Note:** Instagram also requires your Instagram account to be a Business or Creator account (not Personal), and linked to a Facebook Page. Do this in Instagram > Settings > Account > Switch to Professional, then link to your Facebook Page.
 
 ### OAuth Flow (for multi-user / production)
 
