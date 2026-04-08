@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+html,
+body {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+body {
+  font-family: var(--font-assistant), system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+}
+
+/* Smooth scrolling for the dashboard */
+html {
+  scroll-behavior: smooth;
+}
