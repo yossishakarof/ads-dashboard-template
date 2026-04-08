@@ -37,8 +37,6 @@ ${JSON.stringify(context, null, 2)}
     const result = await generateText({
       prompt,
       systemPrompt,
-      maxTokens: 2000,
-      model: "sonnet",
     });
 
     if (result.error) {

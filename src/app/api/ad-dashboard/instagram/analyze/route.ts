@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionData } from "@/app/ad-dashboard/lib/session";
-import { generateJson } from "@/lib/utils/anthropic-client";
+import { generateText } from "@/lib/utils/anthropic-client";
 
 // ═══════════════════════════════════════════════════════════
 // Instagram AI Analysis — Claude-powered
@@ -192,18 +192,37 @@ ${thisWeekPosts.length === 0 ? "אין פוסטים מהשבוע האחרון - 
       return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
 
-    const result = await generateJson({
+    const result = await generateText({
       prompt,
       systemPrompt,
-      maxTokens: 6000,
-      model: "sonnet",
     });
 
-    if (result.json) {
-      return NextResponse.json({ ...result.json, action });
+    if (result.error) {
+      return NextResponse.json(
+        { error: "לא הצלחתי לנתח את הנתונים. נסה שוב." },
+        { status: 500 }
+      );
     }
 
-    // If JSON parsing failed, return error
+    // Extract JSON from the text response
+    const patterns = [
+      /```json\n([\s\S]*?)\n```/,
+      /```\n(\{[\s\S]*?\})\n```/,
+      /(\{[\s\S]*\})/,
+    ];
+
+    for (const pattern of patterns) {
+      const match = result.text.match(pattern);
+      if (match) {
+        try {
+          const json = JSON.parse(match[1]);
+          return NextResponse.json({ ...json, action });
+        } catch {
+          // Try next pattern
+        }
+      }
+    }
+
     return NextResponse.json(
       { error: "לא הצלחתי לנתח את הנתונים. נסה שוב." },
       { status: 500 }
