@@ -2,7 +2,8 @@
 
 import { GLASS } from "../lib/constants";
 import type { InstagramMedia } from "../lib/instagram-api";
-import { fmtK, fmtPct, fmtDate, scoreColor } from "./utils";
+import { fmtK, fmtPct, fmtDate } from "../lib/format";
+import { scoreColor } from "./utils";
 
 function MediaTypeBadge({ type }: { type: string }) {
   const map: Record<string, { label: string; color: string }> = {
