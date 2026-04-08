@@ -1,7 +1,7 @@
 "use client";
 
 import type { CampaignGoal } from "../lib/types";
-import { fmtN, fmtCurrency, fmtPct, fmtDec } from "../lib/format";
+import { fmtN, fmtCurrency, fmtDec } from "../lib/format";
 import { GLASS } from "../lib/constants";
 
 export function FunnelStep({

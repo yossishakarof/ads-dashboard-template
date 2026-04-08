@@ -11,7 +11,6 @@ import type {
   ScaleLevel,
 } from "./lib/types";
 import {
-  safe,
   calcDay,
   calcSummary,
   mergeDays,
@@ -21,7 +20,6 @@ import {
   getSmartRecommendations,
   generateEmptyDays,
   generateDemo,
-  getDaysInMonth,
   dbRowToDayData,
 } from "./lib/calculations";
 import {
