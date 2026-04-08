@@ -47,6 +47,18 @@ export async function setSessionData(data: SessionData): Promise<void> {
 }
 
 export async function getSessionData(): Promise<SessionData | null> {
+  // Direct token mode: skip OAuth, use env var
+  const envToken = process.env.META_ACCESS_TOKEN;
+  if (envToken) {
+    return {
+      metaUserId: "env-token-user",
+      name: null,
+      email: null,
+      accessToken: envToken,
+      tokenExpiresAt: null,
+    };
+  }
+
   const cookieStore = await cookies();
   const cookie = cookieStore.get(COOKIE_NAME);
   if (!cookie) return null;
