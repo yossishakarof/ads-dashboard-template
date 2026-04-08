@@ -7,17 +7,9 @@
 
 import { query } from "@anthropic-ai/claude-agent-sdk";
 
-/**
- * Check if Claude Code CLI is available
- */
-export function hasClaudeCode(): boolean {
-  return true;
-}
-
 interface GenerateTextOptions {
   prompt: string;
   systemPrompt?: string;
-  maxTokens?: number;
 }
 
 /**
