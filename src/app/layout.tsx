@@ -7,6 +7,7 @@ const assistant = Assistant({
   weight: ["400", "500", "600", "700", "800"],
   display: "swap",
   variable: "--font-assistant",
+  preload: false,
 });
 
 export const metadata: Metadata = {
