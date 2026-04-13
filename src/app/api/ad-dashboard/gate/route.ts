@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
 
 const COOKIE_NAME = "dashboard_access";
-const SECRET = process.env.AD_DASHBOARD_SESSION_SECRET || "dev-secret";
-
-function sign(value: string): string {
-  return crypto.createHmac("sha256", SECRET).update(value).digest("hex");
-}
 
 export async function POST(request: NextRequest) {
   const password = process.env.DASHBOARD_PASSWORD;
   if (!password) {
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, redirect: "/ad-dashboard" });
   }
 
   const body = await request.json();
@@ -19,12 +13,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "סיסמה שגויה" }, { status: 401 });
   }
 
-  const value = "granted";
-  const sig = sign(value);
   const from = body.from || "/ad-dashboard";
-
   const res = NextResponse.json({ ok: true, redirect: from });
-  res.cookies.set(COOKIE_NAME, `${value}.${sig}`, {
+  res.cookies.set(COOKIE_NAME, "granted", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",

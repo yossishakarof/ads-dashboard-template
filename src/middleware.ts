@@ -1,27 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
 
 const COOKIE_NAME = "dashboard_access";
-const PASSWORD = process.env.DASHBOARD_PASSWORD;
-const SECRET = process.env.AD_DASHBOARD_SESSION_SECRET || "dev-secret";
-
-function sign(value: string): string {
-  return crypto.createHmac("sha256", SECRET).update(value).digest("hex");
-}
-
-function isValidCookie(cookie: string): boolean {
-  const [value, sig] = cookie.split(".");
-  if (!value || !sig) return false;
-  return sig === sign(value);
-}
+const VALID_VALUE = "granted";
 
 export function middleware(request: NextRequest) {
-  // If no password is configured, allow everything through
-  if (!PASSWORD) return NextResponse.next();
+  const password = process.env.DASHBOARD_PASSWORD;
+
+  // If no password configured, allow through
+  if (!password) return NextResponse.next();
 
   const { pathname } = request.nextUrl;
 
-  // Allow the gate page and its API route
+  // Allow gate routes
   if (
     pathname === "/ad-dashboard/gate" ||
     pathname === "/api/ad-dashboard/gate"
@@ -37,9 +27,9 @@ export function middleware(request: NextRequest) {
   if (!isProtected) return NextResponse.next();
 
   const cookie = request.cookies.get(COOKIE_NAME)?.value;
-  if (cookie && isValidCookie(cookie)) return NextResponse.next();
+  if (cookie === VALID_VALUE) return NextResponse.next();
 
-  // Redirect to gate, preserving the original URL
+  // Redirect to gate
   const gate = new URL("/ad-dashboard/gate", request.url);
   gate.searchParams.set("from", pathname);
   return NextResponse.redirect(gate);
