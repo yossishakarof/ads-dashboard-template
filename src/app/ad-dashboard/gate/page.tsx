@@ -29,12 +29,12 @@ function GateForm() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50" dir="rtl">
-      <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
+    <div className="flex min-h-screen items-center justify-center bg-[#08080f]" dir="rtl">
+      <div className="w-full max-w-sm rounded-2xl border border-white/[0.08] bg-[#111119] p-8 shadow-lg shadow-black/40">
         <div className="mb-6 text-center">
           <div className="mb-2 text-3xl">📊</div>
-          <h1 className="text-xl font-extrabold text-gray-900">Ads Dashboard</h1>
-          <p className="mt-1 text-sm text-gray-500">הזן סיסמה להמשך</p>
+          <h1 className="text-xl font-extrabold text-white">Ads Dashboard</h1>
+          <p className="mt-1 text-sm text-slate-400">הזן סיסמה להמשך</p>
         </div>
         <form onSubmit={submit} className="space-y-4">
           <input
@@ -43,7 +43,7 @@ function GateForm() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="סיסמה"
             autoFocus
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-right text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-right text-sm text-white outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20"
           />
           {error && (
             <p className="text-center text-sm font-medium text-red-500">{error}</p>
@@ -51,7 +51,7 @@ function GateForm() {
           <button
             type="submit"
             disabled={loading || !password}
-            className="w-full rounded-xl bg-gray-900 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-gray-700 disabled:opacity-50"
+            className="w-full rounded-xl bg-amber-500 px-4 py-3 text-sm font-semibold text-black transition-all hover:bg-amber-400 disabled:opacity-50"
           >
             {loading ? "מתחבר..." : "כניסה"}
           </button>

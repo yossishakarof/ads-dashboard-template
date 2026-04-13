@@ -70,10 +70,10 @@ export const FUNNEL_COLORS = [
 ];
 
 export const GLASS =
-  "rounded-2xl border border-gray-200 bg-white shadow-sm";
+  "rounded-2xl border border-white/[0.08] bg-[#111119] shadow-sm";
 
 export const GLASS_HOVER =
-  "transition-all duration-300 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md";
+  "transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:shadow-lg hover:shadow-black/40";
 
 export const META_API_VERSION = "v21.0";
 export const META_API_BASE = `https://graph.facebook.com/${META_API_VERSION}`;

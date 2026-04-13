@@ -927,7 +927,7 @@ export function Dashboard({
         : "good";
 
   const inputCls =
-    "rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-900 outline-none transition-all focus:border-blue-400 focus:ring-1 focus:ring-blue-100";
+    "rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white outline-none transition-all focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20";
   const numInputCls = `${inputCls} [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`;
 
   const isSyncing = Object.values(syncStatus).some((s) => s.isSyncing);
@@ -954,12 +954,12 @@ export function Dashboard({
   if (isLoading) {
     return (
       <main
-        className="flex min-h-screen items-center justify-center bg-gray-50"
+        className="flex min-h-screen items-center justify-center bg-[#08080f]"
         dir="rtl"
       >
         <div className="text-center">
-          <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent mx-auto" />
-          <p className="text-sm text-gray-400">טוען נתונים...</p>
+          <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-amber-500 border-t-transparent mx-auto" />
+          <p className="text-sm text-slate-400">טוען נתונים...</p>
         </div>
       </main>
     );
@@ -967,7 +967,7 @@ export function Dashboard({
 
   return (
     <main
-      className="relative min-h-screen bg-gray-50 text-gray-900"
+      className="relative min-h-screen bg-[#08080f] text-white"
       dir="rtl"
     >
       <ConfirmDialog
@@ -983,16 +983,16 @@ export function Dashboard({
         {/* HEADER */}
         <header className="mb-10 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
-            <div className="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
+            <div className="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
               Meta Ads Dashboard
             </div>
-            <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 md:text-5xl">
+            <h1 className="text-4xl font-extrabold tracking-tight text-white md:text-5xl">
               אצבע על הדופק
             </h1>
-            <p className="mt-2 max-w-lg text-sm leading-relaxed text-gray-500">
+            <p className="mt-2 max-w-lg text-sm leading-relaxed text-slate-400">
               דשבורד מעקב Meta Ads + משפך המרות + רווחיות
               {user && (
-                <span className="mr-2 text-blue-600">
+                <span className="mr-2 text-amber-400">
                   · מחובר כ-{user.name}
                 </span>
               )}
@@ -1014,8 +1014,8 @@ export function Dashboard({
                   disabled={isSyncing || presetSyncing}
                   className={`rounded-xl border px-4 py-2 text-xs font-semibold transition-all ${
                     isSyncing || presetSyncing
-                      ? "border-blue-300 bg-blue-50 text-blue-600"
-                      : "border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:bg-blue-50"
+                      ? "border-blue-500/40 bg-blue-950/40 text-blue-400"
+                      : "border-white/[0.08] bg-white/5 text-slate-400 hover:border-blue-500/40 hover:bg-blue-950/40"
                   }`}
                 >
                   {isSyncing || presetSyncing ? "מסנכרן..." : "🔄 סנכרן מ-Meta"}
@@ -1024,8 +1024,8 @@ export function Dashboard({
                   onClick={() => { setShowDiagnostic(false); setShowInstagram(false); loadWinningAds(); }}
                   className={`rounded-xl border px-4 py-2 text-xs font-semibold transition-all ${
                     showWinningAds
-                      ? "border-amber-300 bg-amber-50 text-amber-700"
-                      : "border-gray-200 bg-white text-gray-600 hover:border-amber-300 hover:bg-amber-50"
+                      ? "border-amber-500/40 bg-amber-950/40 text-amber-400"
+                      : "border-white/[0.08] bg-white/5 text-slate-400 hover:border-amber-500/40 hover:bg-amber-950/40"
                   }`}
                 >
                   🏆 מודעה מנצחת
@@ -1034,8 +1034,8 @@ export function Dashboard({
                   onClick={() => { setShowInstagram(false); loadDiagnostic(); }}
                   className={`rounded-xl border px-4 py-2 text-xs font-semibold transition-all ${
                     showDiagnostic
-                      ? "border-blue-300 bg-blue-50 text-blue-700"
-                      : "border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:bg-blue-50"
+                      ? "border-blue-500/40 bg-blue-950/40 text-blue-400"
+                      : "border-white/[0.08] bg-white/5 text-slate-400 hover:border-blue-500/40 hover:bg-blue-950/40"
                   }`}
                 >
                   🩺 אבחון מצב
@@ -1044,8 +1044,8 @@ export function Dashboard({
                   onClick={() => { setShowWinningAds(false); setShowDiagnostic(false); setShowInstagram(!showInstagram); }}
                   className={`rounded-xl border px-4 py-2 text-xs font-semibold transition-all ${
                     showInstagram
-                      ? "border-purple-300 bg-purple-50 text-purple-700"
-                      : "border-gray-200 bg-white text-gray-600 hover:border-purple-300 hover:bg-purple-50"
+                      ? "border-purple-500/40 bg-purple-950/40 text-purple-400"
+                      : "border-white/[0.08] bg-white/5 text-slate-400 hover:border-purple-500/40 hover:bg-purple-950/40"
                   }`}
                 >
                   📸 אינסטגרם
@@ -1056,13 +1056,13 @@ export function Dashboard({
               <>
                 <a
                   href="/api/ad-dashboard/auth/login"
-                  className="rounded-xl border border-blue-300 bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-700 transition-all hover:bg-blue-100"
+                  className="rounded-xl border border-blue-500/40 bg-blue-950/40 px-4 py-2 text-xs font-semibold text-blue-400 transition-all hover:bg-blue-950/60"
                 >
                   🔗 התחבר ל-Meta
                 </a>
                 <button
                   onClick={loadDemo}
-                  className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-600 transition-all hover:border-gray-300 hover:bg-gray-50"
+                  className="rounded-xl border border-white/[0.08] bg-white/5 px-4 py-2 text-xs font-medium text-slate-400 transition-all hover:bg-white/[0.08]"
                 >
                   טען דאטה לדוגמה
                 </button>
@@ -1070,7 +1070,7 @@ export function Dashboard({
             )}
             <button
               onClick={clearAll}
-              className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-600 transition-all hover:border-gray-300 hover:bg-gray-50"
+              className="rounded-xl border border-white/[0.08] bg-white/5 px-4 py-2 text-xs font-medium text-slate-400 transition-all hover:bg-white/[0.08]"
             >
               נקה הכל
             </button>
@@ -1078,8 +1078,8 @@ export function Dashboard({
               onClick={() => setShowAI(!showAI)}
               className={`rounded-xl border px-4 py-2 text-xs font-semibold transition-all ${
                 showAI
-                  ? "border-blue-300 bg-blue-50 text-blue-700"
-                  : "border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:bg-blue-50"
+                  ? "border-blue-500/40 bg-blue-950/40 text-blue-400"
+                  : "border-white/[0.08] bg-white/5 text-slate-400 hover:border-blue-500/40 hover:bg-blue-950/40"
               }`}
             >
               📥 ייבוא / ייצוא
@@ -1091,7 +1091,7 @@ export function Dashboard({
                     method: "POST",
                   }).then(() => (window.location.href = "/ad-dashboard/login"))
                 }
-                className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-600 transition-all hover:border-red-300 hover:bg-red-50"
+                className="rounded-xl border border-white/[0.08] bg-white/5 px-4 py-2 text-xs font-medium text-slate-400 transition-all hover:border-red-500/40 hover:bg-red-950/40"
               >
                 התנתק
               </button>
@@ -1142,16 +1142,16 @@ export function Dashboard({
 
         {/* LOAD ERROR */}
         {loadError && (
-          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-5 py-4">
+          <div className="mb-6 rounded-xl border border-red-500/30 bg-red-950/40 px-5 py-4">
             <div className="flex items-center gap-3">
               <span className="text-lg">❌</span>
               <div>
-                <div className="text-sm font-bold text-red-700">שגיאה בטעינת נתונים</div>
-                <p className="mt-0.5 text-sm text-red-600">{loadError}</p>
+                <div className="text-sm font-bold text-red-400">שגיאה בטעינת נתונים</div>
+                <p className="mt-0.5 text-sm text-red-400">{loadError}</p>
               </div>
               <button
                 onClick={() => window.location.reload()}
-                className="mr-auto rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-700 transition-all hover:bg-red-100"
+                className="mr-auto rounded-lg border border-red-500/30 bg-red-950/40 px-3 py-1.5 text-xs font-semibold text-red-400 transition-all hover:bg-red-950/60"
               >
                 רענן
               </button>
@@ -1161,7 +1161,7 @@ export function Dashboard({
 
         {/* DATE PRESETS */}
         <div className="mb-3 flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-gray-500">📅</span>
+          <span className="text-xs font-medium text-slate-500">📅</span>
           {([
             { key: "today", label: "היום" },
             { key: "yesterday", label: "אתמול" },
@@ -1185,8 +1185,8 @@ export function Dashboard({
               disabled={presetSyncing}
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                 activePreset === p.key
-                  ? "bg-gray-900 text-white"
-                  : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                  ? "bg-amber-500 text-black"
+                  : "border border-white/[0.08] bg-white/5 text-slate-400 hover:bg-white/5"
               }`}
             >
               {presetSyncing && activePreset === p.key ? "טוען..." : p.label}
@@ -1198,7 +1198,7 @@ export function Dashboard({
         <div
           className={`mb-8 flex flex-wrap items-center gap-4 ${GLASS} p-4 md:gap-6 md:p-5`}
         >
-          <label className="flex items-center gap-2 text-sm text-gray-600">
+          <label className="flex items-center gap-2 text-sm text-slate-400">
             שם העסק
             <input
               type="text"
@@ -1219,11 +1219,11 @@ export function Dashboard({
                 }
                 chMonth(m, y);
               }}
-              className="rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-600 transition-all hover:bg-gray-50"
+              className="rounded-lg border border-white/[0.08] bg-white/5 px-2 py-1.5 text-sm text-slate-400 transition-all hover:bg-white/[0.08]"
             >
               ←
             </button>
-            <label className="flex items-center gap-2 text-sm text-gray-600">
+            <label className="flex items-center gap-2 text-sm text-slate-400">
               חודש
               <select
                 value={settings.month}
@@ -1249,12 +1249,12 @@ export function Dashboard({
                 }
                 chMonth(m, y);
               }}
-              className="rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-600 transition-all hover:bg-gray-50"
+              className="rounded-lg border border-white/[0.08] bg-white/5 px-2 py-1.5 text-sm text-slate-400 transition-all hover:bg-white/[0.08]"
             >
               →
             </button>
           </div>
-          <label className="flex items-center gap-2 text-sm text-gray-600">
+          <label className="flex items-center gap-2 text-sm text-slate-400">
             שנה
             <input
               type="number"
@@ -1265,7 +1265,7 @@ export function Dashboard({
               className={`w-20 ${numInputCls}`}
             />
           </label>
-          <label className="flex items-center gap-2 text-sm text-gray-600">
+          <label className="flex items-center gap-2 text-sm text-slate-400">
             מע״מ %
             <input
               type="number"
@@ -1276,7 +1276,7 @@ export function Dashboard({
               className={`w-14 ${numInputCls}`}
             />
           </label>
-          <label className="flex items-center gap-2 text-sm text-gray-600">
+          <label className="flex items-center gap-2 text-sm text-slate-400">
             ROAS איזון
             <input
               type="number"
@@ -1288,7 +1288,7 @@ export function Dashboard({
               className={`w-16 ${numInputCls}`}
             />
           </label>
-          <label className="flex items-center gap-2 text-sm text-gray-600">
+          <label className="flex items-center gap-2 text-sm text-slate-400">
             מטרת קמפיין
             <select
               value={settings.campaignGoal}
@@ -1310,7 +1310,7 @@ export function Dashboard({
             </select>
           </label>
           {activeAccountId !== "summary" ? (
-            <label className="flex items-center gap-2 text-sm text-gray-600">
+            <label className="flex items-center gap-2 text-sm text-slate-400">
               אירוע ליד ({activeAccount?.name})
               <select
                 value={getLeadActionType(activeAccountId)}
@@ -1325,7 +1325,7 @@ export function Dashboard({
               </select>
             </label>
           ) : accounts.length === 1 ? (
-            <label className="flex items-center gap-2 text-sm text-gray-600">
+            <label className="flex items-center gap-2 text-sm text-slate-400">
               אירוע ליד
               <select
                 value={getLeadActionType(accounts[0].id)}
@@ -1340,7 +1340,7 @@ export function Dashboard({
               </select>
             </label>
           ) : (
-            <label className="flex items-center gap-2 text-sm text-gray-600">
+            <label className="flex items-center gap-2 text-sm text-slate-400">
               אירוע ליד (ברירת מחדל)
               <select
                 value={settings.leadActionType || "auto"}
@@ -1359,21 +1359,21 @@ export function Dashboard({
 
         {/* SYNC ERROR BANNER */}
         {hasSyncErrors && (
-          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-5 py-4">
+          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-950/40 px-5 py-4">
             <div className="flex items-start gap-3">
               <span className="mt-0.5 text-lg">⚠️</span>
               <div className="flex-1">
-                <div className="text-sm font-bold text-red-700">
+                <div className="text-sm font-bold text-red-400">
                   שגיאה במשיכת נתונים מ-Meta
                 </div>
-                <p className="mt-1 text-sm text-red-600">
+                <p className="mt-1 text-sm text-red-400">
                   הנתונים המוצגים עלולים להיות חלקיים או לא מעודכנים. החישובים עלולים להיות לא מדויקים.
                 </p>
                 <div className="mt-2 space-y-1">
                   {syncErrors.map(([accId, status]) => {
                     const accName = accounts.find(a => a.id === accId)?.name || accId;
                     return (
-                      <div key={accId} className="text-xs text-red-500">
+                      <div key={accId} className="text-xs text-red-400">
                         <span className="font-medium">{accName}:</span> {status.error}
                       </div>
                     );
@@ -1385,7 +1385,7 @@ export function Dashboard({
                       syncAccount(acc.id, settings.month, settings.year, true);
                     }
                   }}
-                  className="mt-3 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-700 transition-all hover:bg-red-100"
+                  className="mt-3 rounded-lg border border-red-500/30 bg-red-950/40 px-3 py-1.5 text-xs font-semibold text-red-400 transition-all hover:bg-red-950/60"
                 >
                   🔄 נסה שוב
                 </button>
@@ -1401,13 +1401,13 @@ export function Dashboard({
               onClick={() => setActiveAccountId("summary")}
               className={`flex-shrink-0 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${
                 activeAccountId === "summary"
-                  ? "bg-blue-50 text-blue-700 shadow-sm"
-                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                  ? "bg-blue-950/40 text-blue-400 shadow-sm"
+                  : "text-slate-500 hover:bg-white/5 hover:text-slate-300"
               }`}
             >
               📊 סיכום כולל
             </button>
-            <div className="h-6 w-px flex-shrink-0 bg-gray-200" />
+            <div className="h-6 w-px flex-shrink-0 bg-white/[0.05]" />
             {accounts.map((acc) => {
               const accSum = calcSummary(acc.days, settings.vatRate);
               return (
@@ -1416,13 +1416,13 @@ export function Dashboard({
                   onClick={() => setActiveAccountId(acc.id)}
                   className={`group relative flex-shrink-0 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
                     activeAccountId === acc.id
-                      ? "bg-purple-50 text-purple-700 shadow-sm"
-                      : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                      ? "bg-purple-950/40 text-purple-400 shadow-sm"
+                      : "text-slate-500 hover:bg-white/5 hover:text-slate-300"
                   }`}
                 >
                   <span>{acc.name}</span>
                   {accSum.totalSpend > 0 && (
-                    <span className="mr-2 text-[10px] text-gray-500">
+                    <span className="mr-2 text-[10px] text-slate-500">
                       {fmtCurrency(accSum.totalSpend)}
                     </span>
                   )}
@@ -1443,7 +1443,7 @@ export function Dashboard({
             {!user && (
               <button
                 onClick={addAccount}
-                className="flex-shrink-0 rounded-xl px-3 py-2.5 text-lg text-gray-400 transition-all hover:bg-gray-50 hover:text-gray-600"
+                className="flex-shrink-0 rounded-xl px-3 py-2.5 text-lg text-slate-500 transition-all hover:bg-white/5 hover:text-slate-300"
               >
                 +
               </button>
@@ -1454,18 +1454,18 @@ export function Dashboard({
         {/* ACCOUNT NAME */}
         {activeAccount && (
           <div className="-mt-4 mb-8 flex items-center gap-3 px-2">
-            <span className="text-xs text-gray-500">שם חשבון:</span>
+            <span className="text-xs text-slate-500">שם חשבון:</span>
             <input
               type="text"
               value={activeAccount.name}
               onChange={(e) =>
                 renameAccount(activeAccountId, e.target.value)
               }
-              className="rounded-lg border border-gray-200 bg-white px-3 py-1 text-sm text-gray-900 outline-none transition-all focus:border-purple-400"
+              className="rounded-lg border border-white/10 bg-white/5 px-3 py-1 text-sm text-white outline-none transition-all focus:border-amber-500/50"
               readOnly={!!user}
             />
             {syncStatus[activeAccountId] && (
-              <span className={`text-xs ${syncStatus[activeAccountId].error ? "text-red-600 font-medium" : "text-gray-500"}`}>
+              <span className={`text-xs ${syncStatus[activeAccountId].error ? "text-red-400 font-medium" : "text-slate-500"}`}>
                 {syncStatus[activeAccountId].isSyncing
                   ? "מסנכרן..."
                   : syncStatus[activeAccountId].error
@@ -1481,7 +1481,7 @@ export function Dashboard({
         {/* PER-ACCOUNT BREAKDOWN (Summary) */}
         {activeAccountId === "summary" && sum.activeDays > 0 && (
           <div className="mb-8">
-            <h3 className="mb-4 text-lg font-bold text-gray-900">
+            <h3 className="mb-4 text-lg font-bold text-white">
               פירוט לפי חשבון
             </h3>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
@@ -1494,10 +1494,10 @@ export function Dashboard({
                     onClick={() => setActiveAccountId(acc.id)}
                     className={`cursor-pointer ${GLASS} ${GLASS_HOVER} p-4`}
                   >
-                    <div className="mb-1 text-sm font-medium text-gray-500">
+                    <div className="mb-1 text-sm font-medium text-slate-400">
                       {acc.name}
                     </div>
-                    <div className="text-lg font-bold text-gray-900">
+                    <div className="text-lg font-bold text-white">
                       {fmtCurrency(accSum.totalSpend)}
                     </div>
                     <div
@@ -1505,7 +1505,7 @@ export function Dashboard({
                     >
                       רווח: {fmtSigned(accSum.totalNetProfit)}
                     </div>
-                    <div className="mt-0.5 text-xs text-gray-500">
+                    <div className="mt-0.5 text-xs text-slate-500">
                       ROAS: {fmtRoas(accSum.overallRoas)}
                     </div>
                   </div>
@@ -1517,8 +1517,8 @@ export function Dashboard({
 
         {/* SECTION: Financial Overview */}
         <div className="mb-2 flex items-center gap-2 px-1">
-          <span className="text-sm font-bold text-gray-900">💼 סיכום כספי</span>
-          <div className="h-px flex-1 bg-gray-200" />
+          <span className="text-sm font-bold text-white">💼 סיכום כספי</span>
+          <div className="h-px flex-1 bg-white/[0.05]" />
         </div>
         <div className="mb-5 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
           <KPICard
@@ -1573,8 +1573,8 @@ export function Dashboard({
 
         {/* SECTION: Performance Metrics */}
         <div className="mb-2 flex items-center gap-2 px-1">
-          <span className="text-sm font-bold text-gray-900">📊 מדדי ביצוע</span>
-          <div className="h-px flex-1 bg-gray-200" />
+          <span className="text-sm font-bold text-white">📊 מדדי ביצוע</span>
+          <div className="h-px flex-1 bg-white/[0.05]" />
         </div>
         <div className="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
           <KPICard
@@ -1615,11 +1615,11 @@ export function Dashboard({
         {adLeaderboard.length > 0 && (
           <div className={`mb-10 ${GLASS} p-5 md:p-6`}>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">
+              <h2 className="text-lg font-bold text-white">
                 🏆 מודעה ווינרית (לפי{" "}
                 {CAMPAIGN_GOAL_LABELS[settings.campaignGoal]})
               </h2>
-              <span className="rounded-lg bg-gray-100 px-3 py-1 text-xs font-medium text-gray-500">
+              <span className="rounded-lg bg-white/[0.04] px-3 py-1 text-xs font-medium text-slate-400">
                 {adLeaderboard.length} מודעות
               </span>
             </div>
@@ -1627,14 +1627,14 @@ export function Dashboard({
               {adLeaderboard.slice(0, 3).map((ad, i) => {
                 const medals = ["🥇", "🥈", "🥉"];
                 const borderColors = [
-                  "border-amber-300",
-                  "border-gray-200",
-                  "border-orange-200",
+                  "border-amber-500/40",
+                  "border-white/[0.08]",
+                  "border-orange-500/30",
                 ];
                 const bgColors = [
-                  "bg-amber-50",
-                  "bg-white",
-                  "bg-white",
+                  "bg-amber-950/40",
+                  "bg-white/[0.02]",
+                  "bg-white/[0.02]",
                 ];
                 return (
                   <div
@@ -1643,29 +1643,29 @@ export function Dashboard({
                   >
                     <div className="mb-2 flex items-center gap-2">
                       <span className="text-lg">{medals[i]}</span>
-                      <span className="text-sm font-bold text-gray-900">
+                      <span className="text-sm font-bold text-white">
                         {ad.adName}
                       </span>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div>
-                        <span className="text-gray-500">
+                        <span className="text-slate-500">
                           {CAMPAIGN_GOAL_LABELS[settings.campaignGoal]}:{" "}
                         </span>
-                        <span className="font-bold text-gray-900">
+                        <span className="font-bold text-white">
                           {settings.campaignGoal === "revenue"
                             ? fmtCurrency(ad.results)
                             : fmtN(ad.results)}
                         </span>
                       </div>
                       <div>
-                        <span className="text-gray-500">הוצאה: </span>
-                        <span className="font-bold text-gray-900">
+                        <span className="text-slate-500">הוצאה: </span>
+                        <span className="font-bold text-white">
                           {fmtCurrency(ad.spend)}
                         </span>
                       </div>
                       <div>
-                        <span className="text-gray-500">ROAS: </span>
+                        <span className="text-slate-500">ROAS: </span>
                         <span
                           className={`font-bold ${ad.roas >= settings.breakEvenRoas ? "text-emerald-600" : "text-red-600"}`}
                         >
@@ -1673,13 +1673,13 @@ export function Dashboard({
                         </span>
                       </div>
                       <div>
-                        <span className="text-gray-500">CPA: </span>
-                        <span className="font-bold text-gray-900">
+                        <span className="text-slate-500">CPA: </span>
+                        <span className="font-bold text-white">
                           {fmtDec(ad.cpa)}
                         </span>
                       </div>
                     </div>
-                    <div className="mt-2 text-[11px] text-gray-500">
+                    <div className="mt-2 text-[11px] text-slate-500">
                       {ad.days} ימים פעילים
                     </div>
                   </div>
@@ -1694,7 +1694,7 @@ export function Dashboard({
           <div
             className={`mb-8 overflow-hidden ${GLASS}`}
           >
-            <div className="flex border-b border-gray-200">
+            <div className="flex border-b border-white/[0.05]">
               {(
                 [
                   { key: "import" as const, label: "ייבוא JSON", icon: "📥" },
@@ -1706,8 +1706,8 @@ export function Dashboard({
                   onClick={() => setAiTab(t.key)}
                   className={`flex items-center gap-1.5 px-5 py-3.5 text-sm font-medium transition-all ${
                     aiTab === t.key
-                      ? "border-b-2 border-blue-500 bg-blue-50 text-blue-700"
-                      : "text-gray-400 hover:bg-gray-50 hover:text-gray-600"
+                      ? "border-b-2 border-amber-500 bg-amber-950/40 text-amber-400"
+                      : "text-slate-400 hover:bg-white/5 hover:text-slate-300"
                   }`}
                 >
                   <span className="text-xs">{t.icon}</span>
@@ -1718,7 +1718,7 @@ export function Dashboard({
             <div className="p-5 md:p-7">
               {aiTab === "import" && (
                 <div>
-                  <p className="mb-3 text-sm text-gray-500">
+                  <p className="mb-3 text-sm text-slate-400">
                     הדבק JSON כדי לייבא נתונים לדשבורד.
                   </p>
                   <textarea
@@ -1727,7 +1727,7 @@ export function Dashboard({
                       setJsonIn(e.target.value);
                       setImportMsg(null);
                     }}
-                    className="h-48 w-full rounded-xl border border-gray-200 bg-gray-50 p-4 font-mono text-sm text-gray-700 outline-none transition-all focus:border-blue-400 focus:bg-white"
+                    className="h-48 w-full rounded-xl border border-white/10 bg-white/5 p-4 font-mono text-sm text-slate-300 outline-none transition-all focus:border-amber-500/50 focus:bg-white/[0.08]"
                     placeholder='{"settings":{...},"accounts":[...]}'
                     dir="ltr"
                   />
@@ -1751,7 +1751,7 @@ export function Dashboard({
               )}
               {aiTab === "export" && (
                 <div>
-                  <p className="mb-3 text-sm text-gray-500">
+                  <p className="mb-3 text-sm text-slate-400">
                     נתונים נוכחיים כ-JSON.
                   </p>
                   {user ? (
@@ -1764,7 +1764,7 @@ export function Dashboard({
                   ) : (
                     <>
                       <pre
-                        className="max-h-64 overflow-auto rounded-xl border border-gray-200 bg-gray-50 p-4 font-mono text-sm text-gray-700"
+                        className="max-h-64 overflow-auto rounded-xl border border-white/10 bg-white/5 p-4 font-mono text-sm text-slate-300"
                         dir="ltr"
                       >
                         {doExport()}
@@ -1784,16 +1784,16 @@ export function Dashboard({
         )}
 
         {/* DAILY TABLE */}
-        <div className="mb-10 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl shadow-black/5">
-          <div className="flex flex-col gap-3 border-b border-gray-100 bg-gray-50 px-5 py-4 md:flex-row md:items-center md:justify-between md:px-7">
-            <h2 className="text-xl font-bold text-gray-900">
+        <div className="mb-10 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111119] shadow-xl shadow-black/40">
+          <div className="flex flex-col gap-3 border-b border-white/[0.05] bg-white/[0.04] px-5 py-4 md:flex-row md:items-center md:justify-between md:px-7">
+            <h2 className="text-xl font-bold text-white">
               {activeAccountId === "summary"
                 ? "סיכום כולל"
                 : activeAccount?.name || "מעקב"}{" "}
               — {MONTHS_HE[settings.month - 1]} {settings.year}
             </h2>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-0.5 rounded-lg bg-gray-100 p-0.5">
+              <div className="flex items-center gap-0.5 rounded-lg bg-white/[0.04] p-0.5">
                 {(
                   [
                     { key: "daily" as const, label: "יומי" },
@@ -1806,8 +1806,8 @@ export function Dashboard({
                     onClick={() => setTimeView(t.key)}
                     className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
                       timeView === t.key
-                        ? "bg-white text-gray-900 shadow-sm"
-                        : "text-gray-500 hover:text-gray-700"
+                        ? "bg-amber-500 text-black shadow-sm"
+                        : "text-slate-500 hover:text-slate-300"
                     }`}
                   >
                     {t.label}
@@ -1815,12 +1815,12 @@ export function Dashboard({
                 ))}
               </div>
               <div className="hidden items-center gap-3 text-xs md:flex">
-                <span className="flex items-center gap-1.5 text-gray-400">
-                  <span className="inline-block h-2 w-4 rounded-sm bg-gray-200" />
+                <span className="flex items-center gap-1.5 text-slate-500">
+                  <span className="inline-block h-2 w-4 rounded-sm bg-white/[0.08]" />
                   קלט
                 </span>
-                <span className="flex items-center gap-1.5 text-gray-400">
-                  <span className="inline-block h-2 w-4 rounded-sm bg-violet-100" />
+                <span className="flex items-center gap-1.5 text-slate-500">
+                  <span className="inline-block h-2 w-4 rounded-sm bg-violet-900/50" />
                   מחושב אוטומטית
                 </span>
               </div>
