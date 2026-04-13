@@ -98,6 +98,9 @@ export function Dashboard({
   const [syncStatus, setSyncStatus] = useState<
     Record<string, SyncStatus>
   >({});
+  const [activePreset, setActivePreset] = useState<DatePreset>("last_month");
+  const [presetAccountDays, setPresetAccountDays] = useState<Record<string, DayData[]>>({});
+  const [presetSyncing, setPresetSyncing] = useState(false);
 
   // ─── Load data from API ───
   useEffect(() => {
@@ -240,10 +243,57 @@ export function Dashboard({
     [settings.leadActionTypes, settings.leadActionType]
   );
 
+  const RANGE_PRESETS: DatePreset[] = ["today", "yesterday", "last_week"];
+
+  const syncForPreset = useCallback(async (preset: DatePreset) => {
+    if (!user || accounts.length === 0) return;
+    const { since, until } = getDateRange(preset);
+    setPresetSyncing(true);
+    const results: Record<string, DayData[]> = {};
+    await Promise.all(
+      accounts.map(async (acc) => {
+        try {
+          const res = await fetch("/api/ad-dashboard/sync", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              accountId: acc.id,
+              since,
+              until,
+              leadActionType: settings.leadActionTypes?.[acc.id] || settings.leadActionType || "auto",
+            }),
+          });
+          const data = await res.json();
+          if (data.synced && data.data) {
+            results[acc.id] = data.data.map((d: { date: string; adSpend?: number; impressions?: number; uniqueClicks?: number; landingPageViews?: number; registrations?: number; purchases?: number; revenue?: number }) => ({
+              date: d.date,
+              adSpend: d.adSpend || 0,
+              impressions: d.impressions || 0,
+              uniqueClicks: d.uniqueClicks || 0,
+              landingPageViews: d.landingPageViews || 0,
+              registrations: d.registrations || 0,
+              purchases: d.purchases || 0,
+              revenue: d.revenue || 0,
+              adName: "",
+              notes: "",
+            }));
+          } else {
+            results[acc.id] = [];
+          }
+        } catch {
+          results[acc.id] = [];
+        }
+      })
+    );
+    setPresetAccountDays(results);
+    setPresetSyncing(false);
+  }, [user, accounts, settings.leadActionTypes, settings.leadActionType]);
+
   // ─── Computed data ───
   const activeAccount = accounts.find((a) => a.id === activeAccountId);
   const isEditable =
     timeView === "daily" &&
+    !RANGE_PRESETS.includes(activePreset) &&
     (activeAccountId !== "summary" || accounts.length === 1);
 
   const activeDays = useMemo(() => {
@@ -251,14 +301,42 @@ export function Dashboard({
     return accounts.find((a) => a.id === activeAccountId)?.days || [];
   }, [activeAccountId, accounts]);
 
+  const displayDays = useMemo(() => {
+    if (!RANGE_PRESETS.includes(activePreset)) return activeDays;
+    // Range preset: use fetched preset data
+    if (activeAccountId === "summary") {
+      const byDate: Record<string, DayData> = {};
+      for (const days of Object.values(presetAccountDays)) {
+        for (const d of days) {
+          if (!byDate[d.date]) {
+            byDate[d.date] = { ...d };
+          } else {
+            byDate[d.date] = {
+              ...byDate[d.date],
+              adSpend: byDate[d.date].adSpend + d.adSpend,
+              impressions: byDate[d.date].impressions + d.impressions,
+              uniqueClicks: byDate[d.date].uniqueClicks + d.uniqueClicks,
+              landingPageViews: byDate[d.date].landingPageViews + d.landingPageViews,
+              registrations: byDate[d.date].registrations + d.registrations,
+              purchases: byDate[d.date].purchases + d.purchases,
+              revenue: byDate[d.date].revenue + d.revenue,
+            };
+          }
+        }
+      }
+      return Object.values(byDate).sort((a, b) => a.date.localeCompare(b.date));
+    }
+    return presetAccountDays[activeAccountId] || [];
+  }, [activePreset, activeAccountId, activeDays, presetAccountDays]);
+
   const metrics = useMemo(
-    () => activeDays.map((d) => calcDay(d, settings.vatRate)),
-    [activeDays, settings.vatRate]
+    () => displayDays.map((d) => calcDay(d, settings.vatRate)),
+    [displayDays, settings.vatRate]
   );
 
   const sum = useMemo(
-    () => calcSummary(activeDays, settings.vatRate),
-    [activeDays, settings.vatRate]
+    () => calcSummary(displayDays, settings.vatRate),
+    [displayDays, settings.vatRate]
   );
 
   const bestDays = useMemo(() => {
@@ -269,7 +347,7 @@ export function Dashboard({
     let bestRegRateIdx = -1,
       bestRegRateVal = -1;
 
-    activeDays.forEach((day, i) => {
+    displayDays.forEach((day, i) => {
       const active = day.adSpend > 0 || day.revenue > 0 || day.purchases > 0;
       if (!active) return;
       const m = metrics[i];
@@ -295,21 +373,21 @@ export function Dashboard({
       bestCostLpvIdx,
       bestCostLpvVal:
         bestCostLpvIdx >= 0
-          ? activeDays[bestCostLpvIdx].adSpend /
-            activeDays[bestCostLpvIdx].landingPageViews
+          ? displayDays[bestCostLpvIdx].adSpend /
+            displayDays[bestCostLpvIdx].landingPageViews
           : 0,
       bestRegRateIdx,
     };
-  }, [activeDays, metrics]);
+  }, [displayDays, metrics]);
 
   const adLeaderboard = useMemo(
-    () => calcAdLeaderboard(activeDays, settings.campaignGoal),
-    [activeDays, settings.campaignGoal]
+    () => calcAdLeaderboard(displayDays, settings.campaignGoal),
+    [displayDays, settings.campaignGoal]
   );
 
   const smartRecs = useMemo(
-    () => getSmartRecommendations(activeDays, settings.vatRate),
-    [activeDays, settings.vatRate]
+    () => getSmartRecommendations(displayDays, settings.vatRate),
+    [displayDays, settings.vatRate]
   );
 
   // Campaign results — computed based on campaign goal
@@ -328,22 +406,22 @@ export function Dashboard({
 
   const weeklyRows = useMemo(() => {
     if (timeView !== "weekly") return [];
-    return groupByWeek(activeDays).map((w) => ({
+    return groupByWeek(displayDays).map((w) => ({
       label: w.label,
       day: w.data,
       metrics: calcDay(w.data, settings.vatRate),
     }));
-  }, [timeView, activeDays, settings.vatRate]);
+  }, [timeView, displayDays, settings.vatRate]);
 
   const monthlyRow = useMemo(() => {
     if (timeView !== "monthly") return null;
-    const agg = aggregateDays(activeDays);
+    const agg = aggregateDays(displayDays);
     return {
       label: "סה״כ חודשי",
       day: agg,
       metrics: calcDay(agg, settings.vatRate),
     };
-  }, [timeView, activeDays, settings.vatRate]);
+  }, [timeView, displayDays, settings.vatRate]);
 
   // ─── Handlers ───
   const upDay = useCallback(
@@ -741,18 +819,17 @@ export function Dashboard({
     const targetIds = accId === "summary" ? accounts.map(a => a.id) : [accId];
 
     try {
-      const allDays: import("./lib/types").DayData[] = [];
-      for (const id of targetIds) {
-        const res = await fetch("/api/ad-dashboard/sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ accountId: id, since, until, leadActionType: getLeadActionType(id), campaignId: campId || undefined }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-        if (data.synced && data.data) {
-          for (const insight of data.data) {
-            allDays.push({
+      const results = await Promise.all(
+        targetIds.map(async (id) => {
+          const res = await fetch("/api/ad-dashboard/sync", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ accountId: id, since, until, leadActionType: getLeadActionType(id), campaignId: campId || undefined }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error);
+          if (data.synced && data.data) {
+            return (data.data as Array<{ date: string; adSpend?: number; impressions?: number; uniqueClicks?: number; landingPageViews?: number; registrations?: number; purchases?: number; revenue?: number }>).map((insight) => ({
               date: insight.date,
               adSpend: insight.adSpend || 0,
               impressions: insight.impressions || 0,
@@ -763,11 +840,12 @@ export function Dashboard({
               revenue: insight.revenue || 0,
               adName: "",
               notes: "",
-            });
+            }));
           }
-        }
-      }
-      setDiagSum(calcSummary(allDays, settings.vatRate));
+          return [];
+        })
+      );
+      setDiagSum(calcSummary(results.flat(), settings.vatRate));
     } catch {
       setDiagSum(null);
     } finally {
@@ -795,23 +873,24 @@ export function Dashboard({
     setWinningAdsLoading(true);
     setWinningAdsError(null);
     try {
-      const allAds: AdInsight[] = [];
-      for (const accId of targetIds) {
-        const res = await fetch("/api/ad-dashboard/ads", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            accountId: accId,
-            since,
-            until,
-            leadActionType: getLeadActionType(accId),
-          }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "שגיאה");
-        if (data.ads) allAds.push(...data.ads);
-      }
-      setWinningAds(allAds);
+      const results = await Promise.all(
+        targetIds.map(async (accId) => {
+          const res = await fetch("/api/ad-dashboard/ads", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              accountId: accId,
+              since,
+              until,
+              leadActionType: getLeadActionType(accId),
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "שגיאה");
+          return (data.ads as AdInsight[]) || [];
+        })
+      );
+      setWinningAds(results.flat());
     } catch (err) {
       setWinningAdsError(
         err instanceof Error ? err.message : "שגיאה בטעינת מודעות"
@@ -924,18 +1003,22 @@ export function Dashboard({
               <>
                 <button
                   onClick={() => {
-                    for (const acc of accounts) {
-                      syncAccount(acc.id, settings.month, settings.year, true);
+                    if (RANGE_PRESETS.includes(activePreset)) {
+                      syncForPreset(activePreset);
+                    } else {
+                      for (const acc of accounts) {
+                        syncAccount(acc.id, settings.month, settings.year, true);
+                      }
                     }
                   }}
-                  disabled={isSyncing}
+                  disabled={isSyncing || presetSyncing}
                   className={`rounded-xl border px-4 py-2 text-xs font-semibold transition-all ${
-                    isSyncing
+                    isSyncing || presetSyncing
                       ? "border-blue-300 bg-blue-50 text-blue-600"
                       : "border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:bg-blue-50"
                   }`}
                 >
-                  {isSyncing ? "מסנכרן..." : "🔄 סנכרן מ-Meta"}
+                  {isSyncing || presetSyncing ? "מסנכרן..." : "🔄 סנכרן מ-Meta"}
                 </button>
                 <button
                   onClick={() => { setShowDiagnostic(false); setShowInstagram(false); loadWinningAds(); }}
@@ -1079,35 +1162,36 @@ export function Dashboard({
         {/* DATE PRESETS */}
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <span className="text-xs font-medium text-gray-500">📅</span>
-          {DATE_PRESETS.map((p) => {
-            // Check if this preset matches current month
-            const range = getDateRange(p.key);
-            const presetMonth = parseInt(range.since.split("-")[1]);
-            const presetYear = parseInt(range.since.split("-")[0]);
-            const isActive = p.key === "this_month"
-              ? settings.month === new Date().getMonth() + 1 && settings.year === new Date().getFullYear()
-              : p.key === "last_month"
-                ? (() => { const d = new Date(); d.setMonth(d.getMonth() - 1); return settings.month === d.getMonth() + 1 && settings.year === d.getFullYear(); })()
-                : false;
-            return (
-              <button
-                key={p.key}
-                onClick={() => {
+          {([
+            { key: "today", label: "היום" },
+            { key: "yesterday", label: "אתמול" },
+            { key: "last_week", label: "שבוע אחרון" },
+            { key: "last_month", label: "חודש אחרון" },
+          ] as { key: DatePreset; label: string }[]).map((p) => (
+            <button
+              key={p.key}
+              onClick={() => {
+                setActivePreset(p.key);
+                if (RANGE_PRESETS.includes(p.key)) {
+                  syncForPreset(p.key);
+                } else {
+                  // last_month: load that month's data
                   const r = getDateRange(p.key);
                   const m = parseInt(r.since.split("-")[1]);
                   const y = parseInt(r.since.split("-")[0]);
                   chMonth(m, y);
-                }}
-                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
-                  isActive
-                    ? "bg-gray-900 text-white"
-                    : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                {p.label}
-              </button>
-            );
-          })}
+                }
+              }}
+              disabled={presetSyncing}
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+                activePreset === p.key
+                  ? "bg-gray-900 text-white"
+                  : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+              }`}
+            >
+              {presetSyncing && activePreset === p.key ? "טוען..." : p.label}
+            </button>
+          ))}
         </div>
 
         {/* SETTINGS */}
@@ -1765,21 +1849,21 @@ export function Dashboard({
                   {bestDays.bestCtrIdx >= 0 && (
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
                       🎯 CTR הכי גבוה — יום{" "}
-                      {activeDays[bestDays.bestCtrIdx].date} (
+                      {displayDays[bestDays.bestCtrIdx].date} (
                       {fmtPct(metrics[bestDays.bestCtrIdx].ctr)})
                     </span>
                   )}
                   {bestDays.bestCostLpvIdx >= 0 && (
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
                       💰 עלות/צפייה הכי נמוכה — יום{" "}
-                      {activeDays[bestDays.bestCostLpvIdx].date} (₪
+                      {displayDays[bestDays.bestCostLpvIdx].date} (₪
                       {bestDays.bestCostLpvVal.toFixed(1)})
                     </span>
                   )}
                   {bestDays.bestRegRateIdx >= 0 && (
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-700">
                       📝 המרה בדף הכי גבוהה — יום{" "}
-                      {activeDays[bestDays.bestRegRateIdx].date} (
+                      {displayDays[bestDays.bestRegRateIdx].date} (
                       {fmtPct(metrics[bestDays.bestRegRateIdx].regRate)})
                     </span>
                   )}
@@ -1817,7 +1901,7 @@ export function Dashboard({
                 {/* DAILY — editable */}
                 {timeView === "daily" &&
                   isEditable &&
-                  activeDays.map((day, i) => {
+                  displayDays.map((day, i) => {
                     const m = metrics[i];
                     const active = day.adSpend > 0 || day.revenue > 0 || day.purchases > 0;
                     const dayNum = parseInt(day.date.split(".")[0]);
@@ -1859,7 +1943,7 @@ export function Dashboard({
                 {/* DAILY — readonly (summary) */}
                 {timeView === "daily" &&
                   !isEditable &&
-                  activeDays.map((day, i) => {
+                  displayDays.map((day, i) => {
                     const m = metrics[i];
                     const active = day.adSpend > 0 || day.revenue > 0;
                     const bg = i % 2 === 0 ? "bg-white" : "bg-gray-50/60";
