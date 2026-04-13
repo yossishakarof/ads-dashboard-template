@@ -5,6 +5,8 @@ import { Dashboard } from "./dashboard";
 import { getSessionData } from "./lib/session";
 import type { AdUser } from "./lib/types";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "דשבורד ממומן | אצבע על הדופק",
   description:
