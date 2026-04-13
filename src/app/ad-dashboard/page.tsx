@@ -13,19 +13,42 @@ export const metadata: Metadata = {
     "דשבורד מעקב הוצאות פרסום ממומן והחזר השקעה לבעלי עסקים — סנכרון אוטומטי מ-Meta Ads",
 };
 
-export default async function Page() {
-  // Password gate — runs server-side, always has env vars
-  const password = process.env.DASHBOARD_PASSWORD;
-  if (password) {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ key?: string }>;
+}) {
+  const accessKey = process.env.DASHBOARD_ACCESS_KEY;
+
+  if (accessKey) {
     const cookieStore = await cookies();
-    const access = cookieStore.get("dashboard_access")?.value;
-    if (access !== "granted") {
-      redirect("/ad-dashboard/gate?from=/ad-dashboard");
+    const hasAccess = cookieStore.get("dashboard_access")?.value === "granted";
+
+    if (!hasAccess) {
+      const params = await searchParams;
+      if (params.key === accessKey) {
+        // Valid key — grant access via cookie (set via API then redirect)
+        redirect(`/api/ad-dashboard/grant-access?from=/ad-dashboard`);
+      } else {
+        // No access
+        return (
+          <div
+            className="flex min-h-screen items-center justify-center bg-[#08080f]"
+            dir="rtl"
+          >
+            <div className="text-center">
+              <p className="text-2xl font-bold text-white">אין גישה</p>
+              <p className="mt-2 text-sm text-slate-500">
+                אין לך קישור גישה תקף
+              </p>
+            </div>
+          </div>
+        );
+      }
     }
   }
 
   let user: AdUser | null = null;
-
   const session = await getSessionData();
   if (session) {
     user = {
