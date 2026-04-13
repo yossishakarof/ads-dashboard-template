@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 
 async function checkPassword(formData: FormData) {
   "use server";
-  const password = process.env.DASHBOARD_PASSWORD;
-  const input = formData.get("password") as string;
+  const password = process.env.DASHBOARD_PASSWORD?.trim();
+  const input = (formData.get("password") as string)?.trim();
   if (input === password) {
     const cookieStore = await cookies();
     cookieStore.set("dashboard_access", "granted", {
@@ -36,7 +36,7 @@ export default async function Page({
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
-  const password = process.env.DASHBOARD_PASSWORD;
+  const password = process.env.DASHBOARD_PASSWORD?.trim();
 
   if (password) {
     const cookieStore = await cookies();
